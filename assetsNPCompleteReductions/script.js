@@ -1,4 +1,4 @@
-const TAB_IDS = ["overview", "sat3", "clique", "subsetsum", "vertexcover", "hampath", "about"];
+const TAB_IDS = ["overview", "sat3", "clique", "independentset", "subsetsum", "vertexcover", "hampath", "about"];
 const THEME_KEY = "np-reductions-theme";
 const LANGUAGE_KEY = "np-reductions-language";
 
@@ -8,7 +8,7 @@ const TEXT = {
     pageTitle: "NP-Complete Reductions",
     metaDescription: "Interactive visualizations of classical polynomial-time reductions used in NP-completeness proofs.",
     eyebrow: "NP-Completeness",
-    heading: "Classical Reductions Visualizer",
+    heading: "Classical Polynomial Reductions Visualizer",
     subtitle: "Step-by-step constructions from SAT and 3SAT to graph and arithmetic problems.",
     themeToDark: "Switch to dark mode",
     themeToLight: "Switch to light mode",
@@ -18,6 +18,7 @@ const TEXT = {
       overview: "Overview",
       sat3: "SAT ≤P 3SAT",
       clique: "3SAT ≤P CLIQUE",
+      independentset: "3SAT ≤P INDEPENDENT-SET",
       subsetsum: "3SAT ≤P SUBSET-SUM",
       vertexcover: "3SAT ≤P VERTEX-COVER",
       hampath: "3SAT ≤P HAMPATH",
@@ -100,6 +101,7 @@ const TEXT = {
       mapText: [
         "CNF clauses become 3-literal clauses by fresh variables.",
         "Clauses become triples of graph vertices; compatibility becomes edges.",
+        "Clauses become triples with internal conflict edges; contradictory literals also conflict.",
         "Truth choices become decimal rows; clause satisfaction becomes target digits.",
         "Variables and clauses become edge-covering gadgets.",
         "Variables become directed diamonds; satisfied clauses become detours."
@@ -165,6 +167,32 @@ const TEXT = {
       clickHelp: "Click vertices to build a candidate clique.",
       onePerClause: "one per clause",
       allAdjacent: "all selected pairs adjacent",
+      inducedAssignment: "Induced assignment"
+    },
+    independentset: {
+      sourceDef: "3SAT asks whether every clause can receive at least one true literal.",
+      targetDef: "INDEPENDENT-SET asks whether an undirected graph G contains at least k vertices with no edge between any selected pair.",
+      presets: {
+        satSmall: "Small satisfiable",
+        unsatSmall: "Small unsatisfiable",
+        referenceFalse: "Course false formula",
+        referenceTrue: "Course true formula"
+      },
+      steps: [
+        "Create three vertices for every clause, one per literal occurrence.",
+        "Add all three edges inside each clause triple.",
+        "Add edges between contradictory literals in different clauses.",
+        "Ask for an independent set of size k, where k is the number of clauses.",
+        "An independent set chooses one noncontradictory literal from every clause."
+      ],
+      proofForward: "From a satisfying assignment, choose one true literal in each clause. The choices come from different clause triples, and two true literals cannot be contradictory, so no edge joins any selected pair.",
+      proofReverse: "An independent set of size k can contain at most one vertex from each clause triple because each triple is a triangle. With k clauses it must choose exactly one literal per clause, and the absence of contradiction edges lets us set all chosen literals true.",
+      proofPoly: "The graph has 3k vertices, 3k clause-triangle edges, and at most O(k²) contradiction edges. Each edge is decided by comparing literal labels, so the construction is polynomial.",
+      mistake: "Do not use compatibility edges here. That is the CLIQUE construction. For INDEPENDENT-SET, edges mark pairs that cannot be chosen together: same-clause pairs and contradictory literal pairs.",
+      targetK: "Independent-set size k",
+      clickHelp: "Click vertices to build a candidate independent set.",
+      onePerClause: "one per clause",
+      noSelectedEdges: "no selected pair has an edge",
       inducedAssignment: "Induced assignment"
     },
     subsetsum: {
@@ -253,8 +281,8 @@ const TEXT = {
     about: {
       title: "Sources and construction notes",
       body: [
-        "The graph and arithmetic constructions follow the classroom presentation in Michael Sipser, Introduction to the Theory of Computation, Chapter 7: 3SAT to CLIQUE, VERTEX-COVER, HAMPATH, and SUBSET-SUM.",
-        "The Portuguese terminology and example formulas follow the local CMP613 slides in references/, especially the slides on more NP-hard reductions.",
+        "Historically, these reductions trace back to Richard M. Karp's 1972 paper \"Reducibility Among Combinatorial Problems,\" which introduced the polynomial-time reduction method for a list of now-classical NP-complete problems.",
+        "The concrete constructions shown here follow the standard textbook presentations of SAT and 3SAT reductions to CLIQUE, INDEPENDENT-SET, VERTEX-COVER, HAMPATH, and SUBSET-SUM, especially Michael Sipser's Introduction to the Theory of Computation.",
         "For SAT to 3SAT, the long-clause chain is the standard satisfiability-preserving transformation. Unit and binary clauses use equivalent auxiliary-variable gadgets so students can see the existential role of fresh variables explicitly.",
         "All automated solving in this tool is deliberately limited to small formulas and is used only to verify classroom examples and manual selections."
       ]
@@ -265,7 +293,7 @@ const TEXT = {
     pageTitle: "Reduções NP-Completas",
     metaDescription: "Visualizações interativas de reduções polinomiais clássicas usadas em provas de NP-completude.",
     eyebrow: "NP-Completude",
-    heading: "Visualizador de Reduções Clássicas",
+    heading: "Visualizador de Reduções Polinomiais Clássicas",
     subtitle: "Construções passo a passo de SAT e 3SAT para problemas em grafos e aritmética.",
     themeToDark: "Mudar para modo escuro",
     themeToLight: "Mudar para modo claro",
@@ -275,6 +303,7 @@ const TEXT = {
       overview: "Visão geral",
       sat3: "SAT ≤P 3SAT",
       clique: "3SAT ≤P CLIQUE",
+      independentset: "3SAT ≤P CONJ-INDEP",
       subsetsum: "3SAT ≤P SUBSET-SUM",
       vertexcover: "3SAT ≤P COB-VERT",
       hampath: "3SAT ≤P CAMHAM",
@@ -357,6 +386,7 @@ const TEXT = {
       mapText: [
         "Cláusulas CNF viram cláusulas de 3 literais com variáveis novas.",
         "Cláusulas viram trios de vértices; compatibilidade vira aresta.",
+        "Cláusulas viram trios com arestas internas de conflito; literais contraditórios também entram em conflito.",
         "Escolhas de verdade viram linhas decimais; satisfazer cláusulas vira atingir dígitos-alvo.",
         "Variáveis e cláusulas viram gadgets de cobertura de arestas.",
         "Variáveis viram losangos dirigidos; cláusulas satisfeitas viram desvios."
@@ -422,6 +452,32 @@ const TEXT = {
       clickHelp: "Clique em vértices para montar um clique candidato.",
       onePerClause: "um por cláusula",
       allAdjacent: "todos os pares selecionados têm aresta",
+      inducedAssignment: "Atribuição induzida"
+    },
+    independentset: {
+      sourceDef: "3SAT pergunta se cada cláusula pode receber pelo menos um literal verdadeiro.",
+      targetDef: "CONJUNTO INDEPENDENTE pergunta se um grafo não-direcionado G contém pelo menos k vértices sem aresta entre nenhum par selecionado.",
+      presets: {
+        satSmall: "Satisfatível pequeno",
+        unsatSmall: "Insatisfatível pequeno",
+        referenceFalse: "Fórmula falsa da aula",
+        referenceTrue: "Fórmula verdadeira da aula"
+      },
+      steps: [
+        "Criar três vértices para cada cláusula, um por ocorrência de literal.",
+        "Adicionar as três arestas dentro de cada trio de cláusula.",
+        "Adicionar arestas entre literais contraditórios de cláusulas diferentes.",
+        "Pedir um conjunto independente de tamanho k, onde k é o número de cláusulas.",
+        "Um conjunto independente escolhe um literal não contraditório de cada cláusula."
+      ],
+      proofForward: "A partir de uma atribuição satisfatória, escolha um literal verdadeiro em cada cláusula. As escolhas vêm de trios diferentes, e dois literais verdadeiros não podem se contradizer; portanto nenhuma aresta liga pares selecionados.",
+      proofReverse: "Um conjunto independente de tamanho k contém no máximo um vértice de cada trio de cláusula, pois cada trio é um triângulo. Com k cláusulas, ele escolhe exatamente um literal por cláusula, e a ausência de arestas de contradição permite tornar todos os literais escolhidos verdadeiros.",
+      proofPoly: "O grafo tem 3k vértices, 3k arestas de triângulos de cláusula e no máximo O(k²) arestas de contradição. Cada aresta é decidida comparando rótulos de literais, logo a construção é polinomial.",
+      mistake: "Não use arestas de compatibilidade aqui. Essa é a construção de CLIQUE. Para CONJUNTO INDEPENDENTE, as arestas marcam pares que não podem ser escolhidos juntos: pares da mesma cláusula e pares de literais contraditórios.",
+      targetK: "Tamanho k do conjunto independente",
+      clickHelp: "Clique em vértices para montar um conjunto independente candidato.",
+      onePerClause: "um por cláusula",
+      noSelectedEdges: "nenhum par selecionado tem aresta",
       inducedAssignment: "Atribuição induzida"
     },
     subsetsum: {
@@ -510,8 +566,8 @@ const TEXT = {
     about: {
       title: "Fontes e notas de construção",
       body: [
-        "As construções em grafos e aritmética seguem a apresentação didática de Michael Sipser, Introduction to the Theory of Computation, Capítulo 7: 3SAT para CLIQUE, VERTEX-COVER, HAMPATH e SUBSET-SUM.",
-        "A terminologia em português e as fórmulas de exemplo seguem os slides locais de CMP613 em references/, especialmente os slides sobre mais reduções de NP-dificuldade.",
+        "Historicamente, estas reduções remontam ao artigo de Richard M. Karp de 1972, \"Reducibility Among Combinatorial Problems\", que introduziu o método de reduções em tempo polinomial para uma lista de problemas NP-completos hoje clássicos.",
+        "As construções concretas mostradas aqui seguem as apresentações didáticas padrão de reduções de SAT e 3SAT para CLIQUE, CONJUNTO INDEPENDENTE, VERTEX-COVER, HAMPATH e SUBSET-SUM, especialmente Introduction to the Theory of Computation, de Michael Sipser.",
         "Para SAT para 3SAT, a cadeia de cláusulas longas é a transformação padrão que preserva satisfatibilidade. Cláusulas unitárias e binárias usam gadgets equivalentes com variáveis auxiliares para explicitar o papel existencial das variáveis frescas.",
         "Toda resolução automática nesta ferramenta é intencionalmente limitada a fórmulas pequenas e serve apenas para verificar exemplos de aula e seleções manuais."
       ]
@@ -561,6 +617,7 @@ const PRESETS = {
 const DEFAULT_STEPS = {
   sat3: 5,
   clique: 5,
+  independentset: 5,
   subsetsum: 5,
   vertexcover: 5,
   hampath: 5
@@ -570,13 +627,14 @@ const state = {
   language: readStorage(LANGUAGE_KEY, "en") === "pt" ? "pt" : "en",
   theme: readStorage(THEME_KEY, "light") === "dark" ? "dark" : "light",
   activeTab: "overview",
-  graphLayouts: { clique: {}, vertexcover: {}, hampath: {} },
+  graphLayouts: { clique: {}, independentset: {}, vertexcover: {}, hampath: {} },
   graphDrag: null,
   suppressNextGraphClick: false,
   graphDragEndedAt: 0,
   reductions: {
     sat3: { preset: "mixed", input: PRESETS.sat3.mixed.formula, step: 0, constructing: false, buildIndex: 0, assignmentInput: "" },
     clique: { preset: "satSmall", input: PRESETS.threesat.satSmall.formula, step: 0, constructing: false, buildIndex: 0, selected: new Set() },
+    independentset: { preset: "satSmall", input: PRESETS.threesat.satSmall.formula, step: 0, constructing: false, buildIndex: 0, selected: new Set() },
     subsetsum: { preset: "satSmall", input: PRESETS.threesat.satSmall.formula, step: 0, constructing: false, buildIndex: 0, selected: new Set() },
     vertexcover: { preset: "satSmall", input: PRESETS.threesat.satSmall.formula, step: 0, constructing: false, buildIndex: 0, selected: new Set() },
     hampath: {
@@ -1123,6 +1181,127 @@ function checkCliqueSelection(instance, selectedIds) {
     assignment[vertex.lit.name] = value;
   }
   return { valid: onePerClause && allAdjacent, onePerClause, allAdjacent, assignment, conflict };
+}
+
+function buildIndependentSetInstance(clauses) {
+  const vertices = [];
+  clauses.forEach((clause, ci) => {
+    clause.forEach((lit, li) => {
+      vertices.push({ id: `c${ci + 1}l${li + 1}`, clause: ci, occurrence: li, lit: copyLiteral(lit), label: formatLiteral(lit) });
+    });
+  });
+  const clauseEdges = [];
+  const conflictEdges = [];
+  for (let i = 0; i < vertices.length; i += 1) {
+    for (let j = i + 1; j < vertices.length; j += 1) {
+      const a = vertices[i];
+      const b = vertices[j];
+      if (a.clause === b.clause) {
+        clauseEdges.push([a.id, b.id]);
+      } else if (contradictory(a.lit, b.lit)) {
+        conflictEdges.push([a.id, b.id]);
+      }
+    }
+  }
+  const edges = [...clauseEdges, ...conflictEdges];
+  return { vertices, edges, clauseEdges, conflictEdges, k: clauses.length, edgeSet: edgeSet(edges) };
+}
+
+function independentSetConstructionItems(instance) {
+  const items = [];
+  for (let ci = 0; ci < instance.k; ci += 1) {
+    const clauseVertices = instance.vertices.filter((vertex) => vertex.clause === ci);
+    const vertices = clauseVertices.map((vertex) => vertex.id);
+    const labels = clauseVertices.map((vertex) => `${vertex.id}=${vertex.label}`).join(", ");
+    items.push({
+      title: `c${ci + 1}: ${vertices.join(", ")}`,
+      explanation: state.language === "pt"
+        ? `Criamos um vértice para cada ocorrência de literal da cláusula c${ci + 1}: ${labels}. Por enquanto eles são apenas candidatos; as próximas arestas dirão quais candidatos não podem ser escolhidos juntos.`
+        : `Create one vertex for each literal occurrence in clause c${ci + 1}: ${labels}. For now they are just candidates; the next edges will say which candidates cannot be chosen together.`,
+      vertices
+    });
+    const edges = instance.clauseEdges
+      .filter(([a, b]) => vertices.includes(a) && vertices.includes(b))
+      .map(([a, b]) => pairKey(a, b));
+    items.push({
+      title: `${state.language === "pt" ? "triângulo" : "triangle"} c${ci + 1}`,
+      explanation: state.language === "pt"
+        ? `Adicionamos as três arestas dentro do trio de c${ci + 1}. Assim, um conjunto independente pode escolher no máximo um literal desta cláusula. Mesmo literais repetidos são ocorrências separadas, mas as arestas internas impedem escolher duas cópias da mesma cláusula.`
+        : `Add the three edges inside the c${ci + 1} triple. Thus an independent set can choose at most one literal from this clause. Repeated literals are still separate occurrences, but the internal edges prevent choosing two copies from the same clause.`,
+      edges
+    });
+  }
+  for (let ci = 0; ci < instance.k; ci += 1) {
+    for (let cj = ci + 1; cj < instance.k; cj += 1) {
+      const verticesI = new Set(instance.vertices.filter((vertex) => vertex.clause === ci).map((vertex) => vertex.id));
+      const verticesJ = new Set(instance.vertices.filter((vertex) => vertex.clause === cj).map((vertex) => vertex.id));
+      const edges = instance.conflictEdges
+        .filter(([a, b]) => (verticesI.has(a) && verticesJ.has(b)) || (verticesI.has(b) && verticesJ.has(a)))
+        .map(([a, b]) => pairKey(a, b));
+      items.push({
+        title: `c${ci + 1} ↔ c${cj + 1}`,
+        explanation: state.language === "pt"
+          ? `Entre c${ci + 1} e c${cj + 1}, adicionamos arestas somente entre pares contraditórios. Foram adicionada(s) ${edges.length} aresta(s); pares compatíveis ficam sem aresta, pois podem aparecer juntos em um conjunto independente.`
+          : `Between c${ci + 1} and c${cj + 1}, add edges only between contradictory pairs. This adds ${edges.length} edge(s); compatible pairs stay nonadjacent because they may appear together in an independent set.`,
+        edges
+      });
+    }
+  }
+  items.push({
+    title: `${tx().independentset.targetK} = ${instance.k}`,
+    explanation: state.language === "pt"
+      ? `O alvo é k=${instance.k}, o número de cláusulas. Como cada trio é um triângulo, um conjunto independente de tamanho k precisa escolher exatamente um vértice de cada cláusula; como arestas entre cláusulas marcam contradições, as escolhas não podem conter x e ¬x.`
+      : `The target is k=${instance.k}, the number of clauses. Because each triple is a triangle, an independent set of size k must choose exactly one vertex from each clause; because cross-clause edges mark contradictions, the choices cannot contain both x and ¬x.`,
+  });
+  return items;
+}
+
+function independentSetSolution(instance, assignment) {
+  if (!assignment) {
+    return [];
+  }
+  const selected = [];
+  for (let ci = 0; ci < instance.k; ci += 1) {
+    const vertex = instance.vertices.find((v) => v.clause === ci && evalLiteral(v.lit, assignment) === true);
+    if (!vertex) {
+      return [];
+    }
+    selected.push(vertex.id);
+  }
+  return selected;
+}
+
+function checkIndependentSetSelection(instance, selectedIds) {
+  const selected = [...selectedIds];
+  const verticesById = Object.fromEntries(instance.vertices.map((v) => [v.id, v]));
+  const clauses = new Map();
+  let noSelectedEdges = true;
+  for (let i = 0; i < selected.length; i += 1) {
+    const vertex = verticesById[selected[i]];
+    if (vertex) {
+      clauses.set(vertex.clause, (clauses.get(vertex.clause) ?? 0) + 1);
+    }
+    for (let j = i + 1; j < selected.length; j += 1) {
+      if (instance.edgeSet.has(pairKey(selected[i], selected[j]))) {
+        noSelectedEdges = false;
+      }
+    }
+  }
+  const onePerClause = selected.length === instance.k && [...clauses.values()].every((count) => count === 1) && clauses.size === instance.k;
+  const assignment = {};
+  let conflict = false;
+  for (const id of selected) {
+    const vertex = verticesById[id];
+    if (!vertex) {
+      continue;
+    }
+    const value = !vertex.lit.neg;
+    if (assignment[vertex.lit.name] !== undefined && assignment[vertex.lit.name] !== value) {
+      conflict = true;
+    }
+    assignment[vertex.lit.name] = value;
+  }
+  return { valid: onePerClause && noSelectedEdges, onePerClause, noSelectedEdges, assignment, conflict };
 }
 
 function buildSubsetSumInstance(clauses) {
@@ -1704,7 +1883,7 @@ function renderOverview() {
       <section class="band">
         <h2>${escapeHtml(text.mapTitle)}</h2>
         <div class="reduction-map">
-          ${["SAT → 3SAT", "3SAT → CLIQUE", "3SAT → SUBSET-SUM", "3SAT → VERTEX-COVER", "3SAT → HAMPATH"].map((label, index) => `
+          ${["SAT → 3SAT", "3SAT → CLIQUE", "3SAT → INDEPENDENT-SET", "3SAT → SUBSET-SUM", "3SAT → VERTEX-COVER", "3SAT → HAMPATH"].map((label, index) => `
             <article class="map-edge">
               <strong>${escapeHtml(label)}</strong>
               <span>${escapeHtml(text.mapText[index])}</span>
@@ -1971,6 +2150,10 @@ function renderClique() {
   renderGraphReduction("clique", tx().clique, buildCliqueView);
 }
 
+function renderIndependentSet() {
+  renderGraphReduction("independentset", tx().independentset, buildIndependentSetView);
+}
+
 function renderSubsetSum() {
   renderGraphReduction("subsetsum", tx().subsetsum, buildSubsetSumView);
 }
@@ -2064,7 +2247,10 @@ function renderCliqueSvg(instance, selectedIds, solutionIds, layoutKey, construc
   const missingHtml = instance.missing
     .filter(([a, b]) => !visible || (visible.missing.has(pairKey(a, b)) && visible.vertices.has(a) && visible.vertices.has(b)))
     .map(([a, b]) => lineSvg(positions[a], positions[b], "graph-edge is-missing")).join("");
-  const groupLabels = Array.from({ length: instance.k }, (_, ci) => `<text class="svg-small" x="${90 + ci * 180}" y="38">c${ci + 1}</text>`).join("");
+  const groupLabels = Array.from({ length: instance.k }, (_, ci) => {
+    const clauseVisible = !visible || instance.vertices.some((vertex) => vertex.clause === ci && visible.vertices.has(vertex.id));
+    return clauseVisible ? `<text class="svg-small" x="${90 + ci * 180}" y="38">c${ci + 1}</text>` : "";
+  }).join("");
   const nodes = instance.vertices.filter((vertex) => !visible || visible.vertices.has(vertex.id)).map((vertex) => {
     const pos = positions[vertex.id];
     const cls = [
@@ -2084,6 +2270,98 @@ function renderCliqueSvg(instance, selectedIds, solutionIds, layoutKey, construc
 
 function lineSvg(a, b, cls) {
   return `<line class="${cls}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"></line>`;
+}
+
+function buildIndependentSetView(context, localText) {
+  const instance = buildIndependentSetInstance(context.clauses);
+  const solution = independentSetSolution(instance, context.sat.assignment);
+  const rstate = reductionState("independentset");
+  const check = checkIndependentSetSelection(instance, rstate.selected);
+  const layoutKey = formulaLayoutKey("independentset", context.clauses);
+  const constructionItems = independentSetConstructionItems(instance);
+  const construction = constructionView("independentset", constructionItems);
+  return `
+    <div class="page-grid">
+      <div class="main-column">
+        ${sourceFormulaPanel(context)}
+        <section class="visual-panel">
+          <div class="visual-header">
+            <h2>${escapeHtml(ctext().targetInstance)}</h2>
+            <span class="pill">${escapeHtml(localText.targetK)} = ${instance.k}</span>
+          </div>
+          <div class="visual-body">
+            <p>${escapeHtml(`${localText.clickHelp} ${ctext().dragGraphNodes}`)}</p>
+            ${renderIndependentSetSvg(instance, rstate.selected, new Set(solution), layoutKey, construction)}
+          </div>
+        </section>
+      </div>
+      <aside class="side-column">
+        ${statusPanels(context, Boolean(context.sat.assignment), `k = ${instance.k}`)}
+        ${stepperPanel("independentset", constructionItems)}
+        ${independentSetCheckerPanel(check, solution)}
+        ${proofPanel(localText)}
+      </aside>
+    </div>
+  `;
+}
+
+function independentSetCheckerPanel(check, solution) {
+  return `
+    <section class="tool-panel">
+      <h2>${escapeHtml(ctext().solutionChecker)}</h2>
+      <div class="formula-list">
+        <article class="status-box ${check.onePerClause ? "is-good" : "is-bad"}"><h3>${escapeHtml(tx().independentset.onePerClause)}</h3></article>
+        <article class="status-box ${check.noSelectedEdges ? "is-good" : "is-bad"}"><h3>${escapeHtml(tx().independentset.noSelectedEdges)}</h3></article>
+      </div>
+      <div class="toolbar" style="margin-top:10px">
+        <button class="control" type="button" data-action="show-solution" data-reduction="independentset" ${solution.length ? "" : "disabled"}>${escapeHtml(ctext().showSolution)}</button>
+        <button class="control" type="button" data-action="reset-selection" data-reduction="independentset">${escapeHtml(ctext().resetSelection)}</button>
+      </div>
+      <h3 style="margin-top:12px">${escapeHtml(tx().independentset.inducedAssignment)}</h3>
+      ${assignmentHtml(check.assignment)}
+    </section>
+  `;
+}
+
+function renderIndependentSetSvg(instance, selectedIds, solutionIds, layoutKey, construction = null) {
+  const selected = new Set(selectedIds);
+  const visible = construction?.active ? accumConstruction(independentSetConstructionItems(instance), construction.visibleCount) : null;
+  const width = Math.max(760, instance.k * 180 + 80);
+  const height = 360;
+  const basePositions = {};
+  instance.vertices.forEach((vertex) => {
+    basePositions[vertex.id] = {
+      x: 90 + vertex.clause * 180,
+      y: 100 + vertex.occurrence * 82
+    };
+  });
+  const positions = offsetGraphPositions(basePositions, "independentset", layoutKey);
+  const edgeHtml = instance.edges
+    .filter(([a, b]) => !visible || (visible.edges.has(pairKey(a, b)) && visible.vertices.has(a) && visible.vertices.has(b)))
+    .map(([a, b]) => {
+      const invalidSelected = selected.has(a) && selected.has(b);
+      const isClauseEdge = instance.clauseEdges.some(([x, y]) => pairKey(x, y) === pairKey(a, b));
+      return lineSvg(positions[a], positions[b], `graph-edge ${invalidSelected ? "is-uncovered" : isClauseEdge ? "" : "is-soft"}`);
+    }).join("");
+  const groupLabels = Array.from({ length: instance.k }, (_, ci) => {
+    const clauseVisible = !visible || instance.vertices.some((vertex) => vertex.clause === ci && visible.vertices.has(vertex.id));
+    return clauseVisible ? `<text class="svg-small" x="${90 + ci * 180}" y="38">c${ci + 1}</text>` : "";
+  }).join("");
+  const nodes = instance.vertices.filter((vertex) => !visible || visible.vertices.has(vertex.id)).map((vertex) => {
+    const pos = positions[vertex.id];
+    const cls = [
+      "graph-node",
+      selected.has(vertex.id) ? "is-selected" : "",
+      solutionIds.has(vertex.id) ? "is-solution" : ""
+    ].filter(Boolean).join(" ");
+    return `<g class="draggable-item drag-xy" data-action="independent-node" data-id="${attr(vertex.id)}" ${graphDragAttrs("independentset", layoutKey, vertex.id, basePositions[vertex.id], width, height, 25)}>
+      <title>${attr(`c${vertex.clause + 1}: ${vertex.label}`)}</title>
+      <circle class="${cls}" cx="${pos.x}" cy="${pos.y}" r="25"></circle>
+      <text class="svg-label" x="${pos.x}" y="${pos.y}">${escapeHtml(vertex.label)}</text>
+    </g>`;
+  }).join("");
+  const empty = construction?.active && construction.visibleCount === 0 ? `<text class="svg-small" x="${width / 2}" y="${height / 2}">${escapeHtml(ctext().emptyConstruction)}</text>` : "";
+  return `<svg class="graph-svg" viewBox="0 0 ${width} ${height}" role="img" data-graph-svg>${edgeHtml}${groupLabels}${empty}${nodes}</svg>`;
 }
 
 function buildSubsetSumView(context, localText) {
@@ -2408,12 +2686,6 @@ function renderAbout() {
     <section class="band">
       <h2>${escapeHtml(text.title)}</h2>
       ${text.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
-      <ul class="dense-list">
-        <li><code>references/sipser.pdf</code></li>
-        <li><code>references/cmp613_slides_078_more-np-hard-reductions/slides.tex</code></li>
-        <li><code>references/CMP613_alvaro_aula-08.pdf</code>, <code>references/CMP613_alvaro_aula-09.pdf</code>, <code>references/CMP613_alvaro_aula-10.pdf</code></li>
-        <li><code>../sat_tableau2/SAT-tableau/</code></li>
-      </ul>
     </section>
   `;
 }
@@ -2429,6 +2701,8 @@ function render() {
     renderSat3();
   } else if (state.activeTab === "clique") {
     renderClique();
+  } else if (state.activeTab === "independentset") {
+    renderIndependentSet();
   } else if (state.activeTab === "subsetsum") {
     renderSubsetSum();
   } else if (state.activeTab === "vertexcover") {
@@ -2444,6 +2718,9 @@ function currentSolutionFor(reduction) {
   const context = parseReductionFormula(reduction);
   if (reduction === "clique") {
     return cliqueSolution(buildCliqueInstance(context.clauses), context.sat.assignment);
+  }
+  if (reduction === "independentset") {
+    return independentSetSolution(buildIndependentSetInstance(context.clauses), context.sat.assignment);
   }
   if (reduction === "subsetsum") {
     return subsetSolution(buildSubsetSumInstance(context.clauses), context.sat.assignment);
@@ -2617,6 +2894,11 @@ document.addEventListener("click", (event) => {
   }
   if (action === "clique-node") {
     toggleSetItem(reductionState("clique").selected, target.dataset.id);
+    render();
+    return;
+  }
+  if (action === "independent-node") {
+    toggleSetItem(reductionState("independentset").selected, target.dataset.id);
     render();
     return;
   }
